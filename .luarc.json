@@ -1,0 +1,8 @@
+{
+    "diagnostics.globals": [
+        "vim_opt_toggle",
+        "vim_o_toggle",
+        "vim",
+        "vim_wo_toggle"
+    ]
+}
