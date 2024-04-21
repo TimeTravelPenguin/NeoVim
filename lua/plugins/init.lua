@@ -41,4 +41,11 @@ return {
       require "opts.mason"
     end,
   },
+
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function()
+      require "opts.treesitter"
+    end,
+  },
 }
