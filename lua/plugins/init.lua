@@ -6,6 +6,7 @@ return {
     end,
   },
 
+  -- File formatting
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
