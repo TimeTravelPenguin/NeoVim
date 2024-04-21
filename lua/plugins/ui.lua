@@ -5,4 +5,8 @@ return {
       require "configs.tmux-navigation"
     end,
   },
+
+  {
+    "nvim-tree/nvim-web-devicons",
+  },
 }
