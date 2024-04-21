@@ -1,11 +1,4 @@
 return {
-  {
-    "alexghergh/nvim-tmux-navigation",
-    config = function()
-      require "configs.tmux-navigation"
-    end,
-  },
-
   -- File formatting
   {
     "stevearc/conform.nvim",
@@ -15,7 +8,6 @@ return {
     end,
   },
 
-  -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
     config = function()
