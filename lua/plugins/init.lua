@@ -18,15 +18,11 @@ return {
 
   {
     "williamboman/mason.nvim",
-    opts = function()
-      require "opts.mason"
-    end,
+    opts = require "opts.mason",
   },
 
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function()
-      require "opts.treesitter"
-    end,
+    opts = require "opts.treesitter",
   },
 }

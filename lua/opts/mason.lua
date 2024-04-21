@@ -1,4 +1,4 @@
-local options = {
+return {
   ensure_installed = {
     -- General
     "html-lsp",
@@ -34,5 +34,3 @@ local options = {
     "matlab-language-server",
   },
 }
-
-require("mason").setup(options)

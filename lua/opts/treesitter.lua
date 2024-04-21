@@ -1,4 +1,4 @@
-local options = {
+return {
   ensure_installed = {
     -- defaults
     "vim",
@@ -57,5 +57,3 @@ local options = {
     "make",
   },
 }
-
-require("nvim-treesitter").setup(options)
