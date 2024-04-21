@@ -22,4 +22,10 @@ return {
   -- 		},
   -- 	},
   -- },
+  {
+    "williamboman/mason.nvim",
+    opts = function()
+      require "opts.mason"
+    end,
+  },
 }
