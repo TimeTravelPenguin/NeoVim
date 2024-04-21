@@ -17,6 +17,12 @@ return {
   },
 
   {
+    "folke/neodev.nvim",
+    event = "BufEnter",
+    -- Setup in configs/lspconfig.lua
+  },
+
+  {
     "williamboman/mason.nvim",
     opts = require "opts.mason",
   },
