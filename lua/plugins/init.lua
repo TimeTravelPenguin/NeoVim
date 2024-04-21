@@ -1,5 +1,12 @@
 return {
   {
+    "alexghergh/nvim-tmux-navigation",
+    config = function()
+      require "configs.tmux-navigation"
+    end,
+  },
+
+  {
     "stevearc/conform.nvim",
     event = "BufWritePre",
     config = function()
