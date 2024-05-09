@@ -14,7 +14,6 @@ return {
     "pylint",
     "pyright",
     "ruff",
-    "ruff-lsp",
     -- Haskell
     "haskell-debug-adapter",
     "haskell-language-server",
@@ -28,9 +27,12 @@ return {
     "luaformatter",
     "stylua",
     -- Bash / sh
+    "beautysh",
     "shfmt",
     "shellcheck",
+    "shellharden",
     -- Other
     "matlab-language-server",
+    "yamlfix",
   },
 }

@@ -11,10 +11,7 @@ local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
--- EXAMPLE
-
-local servers = { "html", "cssls" }
-local nvlsp = require "nvchad.configs.lspconfig"
+local servers = { "html", "cssls", "ruff", "docker_compose_language_service", "jsonls", "leanls" }
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
@@ -59,25 +56,12 @@ lspconfig.pyright.setup {
   filetypes = { "python" },
   settings = {
     Python = {
-      completion = {
-        callSnippet = "Replace",
+      analysis = {
+        autoSearchPaths = true,
+        diagnosticMode = "openFilesOnly",
+        useLibraryCodeForTypes = true,
       },
-    },
-  },
-}
-
-lspconfig.ruff_lsp.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
-  filetypes = { "python" },
-  init_options = {
-    settings = {
-      Python = {
-        completion = {
-          callSnippet = "Replace",
-        },
-      },
+      completion = {},
     },
   },
 }
