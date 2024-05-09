@@ -25,8 +25,8 @@ end
 
 return function()
   local dap = require "dap-python"
-  -- dap.setup("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
-  local py_path = poetry_py_path()
-  dap.setup(py_path)
+  dap.setup "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
+  -- local py_path = poetry_py_path()
+  -- dap.setup(py_path)
   dap.test_runner = "pytest"
 end

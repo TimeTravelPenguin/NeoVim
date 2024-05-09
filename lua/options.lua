@@ -1,4 +1,7 @@
 require "nvchad.options"
 
 local o = vim.o
-o.cursorlineopt ='both'
+local opt = vim.opt
+
+o.cursorlineopt = 'both'
+opt.relativenumber = true
