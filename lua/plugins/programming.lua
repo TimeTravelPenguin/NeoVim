@@ -6,6 +6,7 @@ return {
       require("neogen").setup { snippet_engine = "luasnip" }
     end,
   },
+
   {
     "linux-cultist/venv-selector.nvim",
     dependencies = {
@@ -20,53 +21,103 @@ return {
       { "<leader>vc", "<cmd>VenvSelectCached<cr>" },
     },
   },
+
   {
     "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim" },
     branch = "dev", -- IMPORTANT!
+    cmd = { "Trouble", "TroubleToggle", "TodoTrouble" },
     keys = {
       {
-        "<leader>xx",
-        "<cmd>Trouble diagnostics toggle<cr>",
+        "<leader>tr",
+        "<cmd>Trouble diagnostics toggle focus=true<cr>",
         desc = "Diagnostics (Trouble)",
       },
       {
-        "<leader>xX",
+        "<leader>tR",
+        "<cmd>Trouble diagnostics_current_buffer toggle focus=true<cr>",
+        desc = "Diagnostics Current Buffer (Trouble)",
+      },
+      {
+        "<leader>tp",
+        "<cmd>Trouble preview_float toggle focus=true<cr>",
+        desc = "Diagnostics Popup (Trouble)",
+      },
+      {
+        "<leader>tT",
         "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
         desc = "Buffer Diagnostics (Trouble)",
       },
       {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
+        "<leader>ts",
+        "<cmd>Trouble symbols toggle focus=false win.position=bottom<cr>",
         desc = "Symbols (Trouble)",
       },
       {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        "<leader>tl",
+        "<cmd>Trouble lsp toggle focus=false win.position=bottom<cr>",
         desc = "LSP Definitions / references / ... (Trouble)",
       },
       {
-        "<leader>xL",
+        "<leader>tL",
         "<cmd>Trouble loclist toggle<cr>",
         desc = "Location List (Trouble)",
       },
       {
-        "<leader>xQ",
+        "<leader>tQ",
         "<cmd>Trouble qflist toggle<cr>",
         desc = "Quickfix List (Trouble)",
       },
     },
-    dependencies = {
-      {
-        "folke/todo-comments.nvim",
-        opts = {},
+    opts = {
+      modes = {
+        preview_float = {
+          mode = "diagnostics",
+          preview = {
+            type = "float",
+            relative = "editor",
+            border = "rounded",
+            title = "Preview",
+            title_pos = "center",
+            position = { 0, -2 },
+            size = { width = 0.5, height = 0.4 },
+            zindex = 200,
+          },
+        },
+        diagnostics_current_buffer = {
+          mode = "diagnostics", -- inherit from diagnostics mode
+          filter = {
+            any = {
+              buf = 0, -- current buffer
+              {
+                severity = vim.diagnostic.severity.ERROR, -- errors only
+                -- limit to files in the current project
+                function(item)
+                  return item.filename:find((vim.loop or vim.uv).cwd(), 1, true)
+                end,
+              },
+            },
+          },
+        },
       },
     },
-    opts = {},
-    init = function()
-      local map = vim.keymap.set
+  },
 
-      map("n", "<leader>t", "<CMD>TroubleToggle<CR>", { desc = "Toggle diagnostics" })
-      map("n", "<leader>td", "<CMD>TodoTrouble keywords=TODO,FIX,FIXME,BUG,TEST,NOTE<CR>", { desc = "Todo/Fix/Fixme" })
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "folke/trouble.nvim" },
+    lazy = false,
+    cmd = { "TodoQuickFix", "TodoTrouble", "TodoTelescope" },
+    config = function()
+      require("todo-comments").setup()
+
+      vim.keymap.set("n", "]c", function()
+        require("todo-comments").jump_next()
+      end, { desc = "Next todo comment" })
+
+      vim.keymap.set("n", "[c", function()
+        require("todo-comments").jump_prev()
+      end, { desc = "Previous todo comment" })
     end,
   },
 }

@@ -21,6 +21,7 @@ return {
 
     -- text formats
     "markdown",
+    "markdown_inline",
     "bibtex",
     "latex",
 
