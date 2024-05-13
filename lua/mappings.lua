@@ -41,3 +41,4 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 require "mappings.dap-python"
 require "mappings.dap-ui"
 require "mappings.git"
+require "mappings.todo-comments"
