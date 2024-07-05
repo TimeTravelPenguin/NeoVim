@@ -38,4 +38,11 @@ return {
     "nvim-treesitter/nvim-treesitter",
     opts = require "opts.treesitter",
   },
+  {
+    "nvimtools/none-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require "configs.none-ls"
+    end,
+  },
 }
