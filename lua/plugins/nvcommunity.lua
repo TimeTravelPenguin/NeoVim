@@ -9,6 +9,5 @@ return {
     -- {
     --   import = "nvcommunity.completion.copilot",
     -- },
-    { import = "nvcommunity.diagnostics.errorlens" },
   },
 }

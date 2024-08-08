@@ -8,6 +8,11 @@ return {
   },
 
   {
+    "williamboman/mason.nvim",
+    opts = require "opts.mason",
+  },
+
+  {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
@@ -30,14 +35,10 @@ return {
   },
 
   {
-    "williamboman/mason.nvim",
-    opts = require "opts.mason",
-  },
-
-  {
     "nvim-treesitter/nvim-treesitter",
     opts = require "opts.treesitter",
   },
+
   {
     "nvimtools/none-ls.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },

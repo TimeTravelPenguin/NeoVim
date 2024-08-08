@@ -24,11 +24,22 @@ return {
       suggestion = {
         auto_trigger = true,
         keymap = {
-          accept = "<S-TAB>",
-          accept_word = "<C-Space>",
+          accept = false,
           accept_line = "<C-l>",
         },
       },
     },
   },
+
+  -- Lines have gaps. Maybe this? https://github.com/chikko80/error-lens.nvim/issues/11
+  -- {
+  --   "chikko80/error-lens.nvim",
+  --   event = "BufRead",
+  --   dependencies = {
+  --     "nvim-telescope/telescope.nvim",
+  --   },
+  --   opts = {
+  --     -- your options go here
+  --   },
+  -- },
 }
