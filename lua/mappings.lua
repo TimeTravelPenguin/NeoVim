@@ -6,6 +6,7 @@ nomap("n", "<leader>v")
 nomap("n", "<leader>h")
 nomap("n", "<leader>n")
 nomap("n", "<leader>rn")
+nomap("n", "<leader>th")
 
 local map = vim.keymap.set
 
@@ -42,3 +43,4 @@ require "mappings.dap-python"
 require "mappings.dap-ui"
 require "mappings.git"
 require "mappings.todo-comments"
+require "mappings.copilot"
