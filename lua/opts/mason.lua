@@ -34,5 +34,6 @@ return {
     -- Other
     "matlab-language-server",
     "yamlfix",
+    "tinymist",
   },
 }

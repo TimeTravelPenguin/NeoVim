@@ -6,9 +6,10 @@ require("neodev").setup {
   },
 }
 
-local on_attach = require("nvchad.configs.lspconfig").on_attach
-local on_init = require("nvchad.configs.lspconfig").on_init
-local capabilities = require("nvchad.configs.lspconfig").capabilities
+local configs = require "nvchad.configs.lspconfig"
+local on_attach = configs.on_attach
+local on_init = configs.on_init
+local capabilities = configs.capabilities
 
 local lspconfig = require "lspconfig"
 local servers = { "html", "cssls", "ruff", "docker_compose_language_service", "jsonls", "leanls" }
@@ -51,7 +52,6 @@ require("lspconfig").lua_ls.setup {
 
 lspconfig.pyright.setup {
   on_attach = on_attach,
-  on_init = on_init,
   capabilities = capabilities,
   filetypes = { "python" },
   settings = {
@@ -64,4 +64,53 @@ lspconfig.pyright.setup {
       completion = {},
     },
   },
+}
+
+lspconfig.tinymist.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  single_file_support = true,
+  root_dir = function()
+    return vim.fn.getcwd()
+  end,
+  settings = {
+    exportPdf = "onSave",
+    outputPath = "$dir/$name",
+    formatterMode = "typstyle",
+  },
+}
+
+vim.g.rustaceanvim = {
+  -- Plugin configuration
+  tools = {},
+  -- LSP configuration
+  server = {
+    -- on_init = on_init,
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+      on_attach(client, bufnr)
+
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+
+      -- you can also put keymaps in here
+      -- local bufnr = vim.api.nvim_get_current_buf()
+      vim.keymap.set("n", "<leader>ca", function()
+        vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
+        -- or vim.lsp.buf.codeAction() if you don't want grouping.
+      end, { silent = true, buffer = bufnr })
+    end,
+    default_settings = {
+      -- rust-analyzer language server configuration
+      ["rust_analyzer"] = {
+        cargo = {
+          allFeatures = true,
+        },
+        checkOnSave = {
+          command = "clippy",
+        },
+      },
+    },
+  },
+  -- DAP configuration
+  dap = {},
 }
