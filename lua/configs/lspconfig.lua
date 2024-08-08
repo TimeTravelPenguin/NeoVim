@@ -1,4 +1,5 @@
 require("nvchad.configs.lspconfig").defaults()
+
 require("neodev").setup {
   library = {
     plugins = { "nvim-dap-ui" },
@@ -23,7 +24,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-require("lspconfig").lua_ls.setup {
+lspconfig.lua_ls.setup {
   on_init = function(client)
     local path = client.workspace_folders[1].name
     if vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc") then
@@ -67,7 +68,19 @@ lspconfig.pyright.setup {
 }
 
 lspconfig.tinymist.setup {
-  on_attach = on_attach,
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+
+    local map = vim.keymap.set
+
+    map("n", "<leader>ba", function()
+      vim.lsp.buf.execute_command { command = "tinymist.pinMain", arguments = { vim.api.nvim_buf_get_name(0) } }
+    end, { desc = "tinymist: Pin buffer as main", noremap = true })
+
+    map("n", "<leader>bd", function()
+      vim.lsp.buf.execute_command { command = "tinymist.pinMain", arguments = { nil } }
+    end, { desc = "tinymist: Unpin buffer as main", noremap = true })
+  end,
   capabilities = capabilities,
   single_file_support = true,
   root_dir = function()
@@ -75,6 +88,7 @@ lspconfig.tinymist.setup {
   end,
   settings = {
     exportPdf = "onSave",
+    preview = "enable",
     outputPath = "$dir/$name",
     formatterMode = "typstyle",
   },

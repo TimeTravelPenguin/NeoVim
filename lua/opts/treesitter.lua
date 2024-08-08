@@ -56,5 +56,7 @@ return {
     -- other
     "cmake",
     "make",
+    "just",
+    "typst",
   },
 }
