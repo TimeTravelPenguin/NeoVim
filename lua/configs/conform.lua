@@ -2,16 +2,16 @@ local options = {}
 
 options.formatters_by_ft = {
   lua = { "stylua" },
-  sh = { "prettier", "shellcheck", "shellharden", "shfmt" },
-  bash = { "beautysh", "shellcheck", "shellcheck", "shellharden", "shfmt" },
+  sh = { "shellcheck", "shellharden", "shfmt" },
+  bash = { "shellcheck", "shellharden", "shfmt" },
   python = { "ruff_format", "ruff_fix" },
   json = { "prettier" },
   markdown = { "prettier" },
   html = { "prettier" },
   css = { "prettier" },
-  xml = { "prettier", "xmllint" },
-  yaml = { "prettier", "yamlfix", "yamlfmt" },
-  toml = { "prettier" },
+  xml = { "xmllint" },
+  yaml = { "prettier" },
+  toml = { "taplo" },
   javascript = { "prettier" },
   haskell = { "fourmolu" },
 }
@@ -27,16 +27,6 @@ end
 options.formatters = {
   shfmt = {
     prepend_args = { "-i", "2" },
-  },
-  prettier = {
-    options = {
-      -- Use a specific prettier parser for a filetype
-      -- Otherwise, prettier will try to infer the parser from the file name
-      ft_parsers = {
-        toml = "toml",
-        xml = "xml",
-      },
-    },
   },
 }
 
