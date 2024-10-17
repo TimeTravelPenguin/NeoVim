@@ -6,8 +6,6 @@ return {
     } },
     { import = "nvcommunity.git.lazygit" },
     { import = "nvcommunity.git.neogit" },
-    -- {
-    --   import = "nvcommunity.completion.copilot",
-    -- },
+    { import = "nvcommunity.folds.ufo", lazy = false },
   },
 }
