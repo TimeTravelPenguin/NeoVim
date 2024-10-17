@@ -34,7 +34,7 @@ map({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "Half page down", remap = false }
 map("n", "<M-j>", ":m +1<CR>", { desc = "Move line down" })
 map("n", "<M-k>", ":m -2<CR>", { desc = "Move line up" })
 
-map({ "n", "i", "v" }, "<F1>", function ()
+map({ "n", "i", "v" }, "<F1>", function()
   vim_o_toggle("colorcolumn", tostring(vim.o.textwidth), "", "Colorcolumn")
 end, { desc = "Toggle Colorcolumn" })
 
@@ -49,8 +49,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- Menu ui for neovim: Keyboard users
 vim.keymap.set("n", "<C-t>", function()
-  require("menu").open("default")
-end, {})
+  require("menu").open "default"
+end, { desc = "Open menu" })
 
 -- Menu ui for neovim: mouse users + nvimtree users
 vim.keymap.set("n", "<RightMouse>", function()
@@ -58,7 +58,7 @@ vim.keymap.set("n", "<RightMouse>", function()
 
   local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
   require("menu").open(options, { mouse = true })
-end, {})
+end, { desc = "Open menu" })
 
 require "mappings.dap-python"
 require "mappings.dap-ui"
