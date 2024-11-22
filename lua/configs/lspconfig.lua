@@ -13,7 +13,7 @@ local on_init = configs.on_init
 local capabilities = configs.capabilities
 
 local lspconfig = require "lspconfig"
-local servers = { "html", "cssls", "ruff", "docker_compose_language_service", "jsonls", "leanls" }
+local servers = { "html", "cssls", "docker_compose_language_service", "jsonls", "leanls" }
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
@@ -84,13 +84,29 @@ lspconfig.pyright.setup {
   capabilities = capabilities,
   filetypes = { "python" },
   settings = {
+    pyright = {
+      -- Use Ruff's import organizer
+      disableOrganizeImports = true,
+    },
     Python = {
       analysis = {
-        autoSearchPaths = true,
-        diagnosticMode = "openFilesOnly",
-        useLibraryCodeForTypes = true,
+        -- Ignore all files for analysis to exclusively use Ruff for linting
+        ignore = { "*" },
       },
       completion = {},
+    },
+  },
+}
+
+require("lspconfig").ruff.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  on_init = on_init,
+  filetypes = { "python" },
+  trace = "verbose",
+  init_options = {
+    settings = {
+      logLevel = "debug",
     },
   },
 }
