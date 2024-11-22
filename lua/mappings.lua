@@ -38,6 +38,10 @@ map({ "n", "i", "v" }, "<F1>", function()
   vim_o_toggle("colorcolumn", tostring(vim.o.textwidth), "", "Colorcolumn")
 end, { desc = "Toggle Colorcolumn" })
 
+map("n", "<leader>th", function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = "Toggle inlay hints" })
+
 -- Blink on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
