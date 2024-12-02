@@ -141,6 +141,7 @@ vim.api.nvim_create_autocmd({
 })
 
 lspconfig.tinymist.setup {
+  on_init = on_init,
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
 
