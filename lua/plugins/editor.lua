@@ -20,15 +20,17 @@ return {
     "zbirenbaum/copilot.lua",
     event = { "InsertEnter" },
     cmd = { "Copilot" },
-    opts = {
-      suggestion = {
-        auto_trigger = true,
-        keymap = {
-          accept = false,
-          accept_line = "<C-l>",
+    config = function()
+      require("copilot").setup({
+        suggestion = {
+          auto_trigger = true,
+          keymap = {
+            accept = false,
+            accept_line = "<C-l>",
+          },
         },
-      },
-    },
+      })
+    end,
   },
 
   -- Lines have gaps. Maybe this? https://github.com/chikko80/error-lens.nvim/issues/11
