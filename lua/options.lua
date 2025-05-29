@@ -6,4 +6,6 @@ local opt = vim.opt
 o.cursorlineopt = 'both'
 opt.relativenumber = true
 
-o.textwidth = 120
+o.textwidth = 80
+
+require "commands.textwidth"

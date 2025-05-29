@@ -79,23 +79,28 @@ lspconfig.texlab.setup {
   },
 }
 
+-- Disable hover from Ruff in favor of Pyright
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("lsp_attach_disable_ruff_hover", { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client == nil then
+      return
+    end
+    if client.name == "ruff" then
+      -- Disable hover in favor of Pyright
+      client.server_capabilities.hoverProvider = false
+    end
+  end,
+  desc = "LSP: Disable hover capability from Ruff",
+})
+
 lspconfig.pyright.setup {
   on_attach = on_attach,
   capabilities = capabilities,
+  on_init = on_init,
   filetypes = { "python" },
-  settings = {
-    pyright = {
-      -- Use Ruff's import organizer
-      disableOrganizeImports = true,
-    },
-    Python = {
-      analysis = {
-        -- Ignore all files for analysis to exclusively use Ruff for linting
-        ignore = { "*" },
-      },
-      completion = {},
-    },
-  },
+  settings = {},
 }
 
 require("lspconfig").ruff.setup {
@@ -106,36 +111,41 @@ require("lspconfig").ruff.setup {
   trace = "verbose",
   init_options = {
     settings = {
-      logLevel = "debug",
+      logLevel = "error",
     },
   },
 }
 
-vim.api.nvim_create_autocmd({
-  "BufNewFile",
-  "BufRead",
-}, {
-  pattern = "*.typ",
-  callback = function()
-    local buf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_buf_set_option(buf, "filetype", "typst")
-
-    -- Remove this in nvim >10.1 if typst ftplugin is added
-    vim.bo.commentstring = "// %s"
-  end,
-})
+-- vim.api.nvim_create_autocmd({
+--   "BufNewFile",
+--   "BufRead",
+-- }, {
+--   pattern = "*.typ",
+--   callback = function()
+--     local buf = vim.api.nvim_get_current_buf()
+--     vim.api.nvim_buf_set_option(buf, "filetype", "typst")
+--   end,
+-- })
 
 -- Automatically pin main.typ as the main file
 vim.api.nvim_create_autocmd({
   "BufNewFile",
   "BufRead",
 }, {
-  pattern = "main.typ",
+  pattern = "main.typ$",
   callback = function(args)
-    vim.lsp.buf.execute_command {
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+    if client == nil or not client.name == "tinymist" then
+      return
+    end
+
+    client:exec_cmd({
+      title = "Pin main.typ",
       command = "tinymist.pinMain",
-      arguments = { vim.api.nvim_buf_get_name(0) },
-    }
+      arguments = { args.file },
+    }, { bufnr = args.buf })
+
     vim.print("Updated pinned main to " .. args.file)
   end,
 })
@@ -145,15 +155,44 @@ lspconfig.tinymist.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
 
+    -- local file_name = vim.api.nvim_buf_get_name(bufnr)
+    -- if file_name:match "main.typ$" then
+    --   client:exec_cmd({
+    --     command = "tinymist.pinMain",
+    --     arguments = { file_name },
+    --   }, { bufnr = bufnr })
+    --
+    --   vim.print("Updated pinned main to " .. file_name)
+    -- end
+
     local map = vim.keymap.set
 
     map("n", "<leader>ba", function()
-      vim.lsp.buf.execute_command { command = "tinymist.pinMain", arguments = { vim.api.nvim_buf_get_name(0) } }
+      client:exec_cmd({
+        command = "tinymist.pinMain",
+        arguments = { vim.api.nvim_buf_get_name(0) },
+      }, { bufnr = bufnr })
+
+      vim.print("Updated pinned main to " .. vim.api.nvim_buf_get_name(0))
     end, { desc = "tinymist: Pin buffer as main", noremap = true })
 
     map("n", "<leader>bd", function()
-      vim.lsp.buf.execute_command { command = "tinymist.pinMain", arguments = { nil } }
+      client:exec_cmd({
+        command = "tinymist.pinMain",
+        arguments = { vim.v.null },
+      }, { bufnr = bufnr })
+
+      vim.print "Unpinned main"
     end, { desc = "tinymist: Unpin buffer as main", noremap = true })
+
+    vim.api.nvim_create_user_command("OpenPdf", function()
+      local filepath = vim.api.nvim_buf_get_name(0)
+      if filepath:match "%.typ$" then
+        os.execute("open " .. vim.fn.shellescape(filepath:gsub("%.typ$", ".pdf")))
+        -- replace open with your preferred pdf viewer
+        -- os.execute("zathura " .. vim.fn.shellescape(filepath:gsub("%.typ$", ".pdf")))
+      end
+    end, {})
   end,
   capabilities = capabilities,
   single_file_support = true,
@@ -164,7 +203,8 @@ lspconfig.tinymist.setup {
     exportPdf = "onSave",
     outputPath = "$dir/$name",
     formatterMode = "typstyle",
-    formatterPrintWidth = 120,
+    formatterPrintWidth = 80,
+    semanticTokens = "disabled",
   },
 }
 

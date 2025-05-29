@@ -21,7 +21,7 @@ return {
     event = { "InsertEnter" },
     cmd = { "Copilot" },
     config = function()
-      require("copilot").setup({
+      require("copilot").setup {
         suggestion = {
           auto_trigger = true,
           keymap = {
@@ -29,7 +29,19 @@ return {
             accept_line = "<C-l>",
           },
         },
-      })
+      }
+    end,
+  },
+
+  {
+    "chomosuke/typst-preview.nvim",
+    lazy = false,
+    version = "1.*",
+    config = function()
+      require("typst-preview").setup {
+      dependencies_bin = { ["tinymist"] = "tinymist" },
+      -- extra_args = { "--input=flavor=mocha" },
+      }
     end,
   },
 
