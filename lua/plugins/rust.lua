@@ -13,4 +13,8 @@ return {
       require("crates").setup()
     end,
   },
+
+  {
+    "pest-parser/pest.vim",
+  },
 }

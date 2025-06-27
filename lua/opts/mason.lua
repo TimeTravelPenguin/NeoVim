@@ -1,6 +1,7 @@
 return {
   ensure_installed = {
     -- General
+    "pest-language-server",
     "html-lsp",
     "css-lsp",
     "prettier",
