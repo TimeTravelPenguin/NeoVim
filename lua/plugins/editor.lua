@@ -39,8 +39,8 @@ return {
     version = "1.*",
     config = function()
       require("typst-preview").setup {
-      dependencies_bin = { ["tinymist"] = "tinymist" },
-      -- extra_args = { "--input=flavor=mocha" },
+        dependencies_bin = { ["tinymist"] = "tinymist" },
+        -- extra_args = { "--input=flavor=mocha" },
       }
     end,
   },
@@ -56,4 +56,12 @@ return {
   --     -- your options go here
   --   },
   -- },
+
+  {
+    "fei6409/log-highlight.nvim",
+    config = function()
+      require("log-highlight").setup {}
+    end,
+    lazy = false,
+  },
 }

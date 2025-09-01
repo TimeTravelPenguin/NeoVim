@@ -141,4 +141,8 @@ return {
       }
     end,
   },
+  {
+    "rcarriga/nvim-notify",
+    lazy = false,
+  },
 }

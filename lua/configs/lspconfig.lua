@@ -24,7 +24,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-require('pest-vim').setup {}
+require("pest-vim").setup {}
 
 lspconfig.lua_ls.setup {
   on_init = function(client)
@@ -129,26 +129,35 @@ require("lspconfig").ruff.setup {
 --   end,
 -- })
 
--- Automatically pin main.typ as the main file
-vim.api.nvim_create_autocmd({
-  "BufNewFile",
-  "BufRead",
-}, {
-  pattern = "main.typ$",
+-- Pin main.typ automatically when Tinymist attaches
+local grp = vim.api.nvim_create_augroup("tinymist_pin_main", { clear = true })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = grp,
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-    if client == nil or not client.name == "tinymist" then
+    if not client or client.name ~= "tinymist" then
       return
     end
 
+    local path = vim.api.nvim_buf_get_name(args.buf)
+    local tail = (vim.fs and vim.fs.basename) and vim.fs.basename(path) or vim.fn.fnamemodify(path, ":t")
+
+    if tail ~= "main.typ" then
+      return
+    end
+
+    -- Tinymist docs recommend this command for pinning the *current* file
     client:exec_cmd({
       title = "Pin main.typ",
       command = "tinymist.pinMain",
       arguments = { args.file },
     }, { bufnr = args.buf })
 
-    vim.print("Updated pinned main to " .. args.file)
+    pcall(function()
+      require "notify"("Pinned main: " .. tail, "info", { title = "Tinymist" })
+    end)
   end,
 })
 
@@ -175,7 +184,13 @@ lspconfig.tinymist.setup {
         arguments = { vim.api.nvim_buf_get_name(0) },
       }, { bufnr = bufnr })
 
-      vim.print("Updated pinned main to " .. vim.api.nvim_buf_get_name(0))
+      local async = require "plenary.async"
+      local notify = require("notify").async
+      local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+
+      async.run(function()
+        notify("Updated pinned main to " .. filename, "info", { title = "Updating pinned main" }).events.close()
+      end)
     end, { desc = "tinymist: Pin buffer as main", noremap = true })
 
     map("n", "<leader>bd", function()
@@ -184,7 +199,13 @@ lspconfig.tinymist.setup {
         arguments = { vim.v.null },
       }, { bufnr = bufnr })
 
-      vim.print "Unpinned main"
+      local async = require "plenary.async"
+      local notify = require("notify").async
+      local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+
+      async.run(function()
+        notify("Unpinned " .. filename, "info", { title = "Unpinning main" }).events.close()
+      end)
     end, { desc = "tinymist: Unpin buffer as main", noremap = true })
 
     vim.api.nvim_create_user_command("OpenPdf", function()
@@ -197,7 +218,6 @@ lspconfig.tinymist.setup {
     end, {})
   end,
   capabilities = capabilities,
-  single_file_support = true,
   root_dir = function()
     return vim.fn.getcwd()
   end,
@@ -235,8 +255,6 @@ vim.g.rustaceanvim = {
     capabilities = capabilities,
     on_attach = function(client, bufnr)
       on_attach(client, bufnr)
-
-      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 
       -- you can also put keymaps in here
       -- local bufnr = vim.api.nvim_get_current_buf()

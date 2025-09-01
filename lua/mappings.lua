@@ -34,13 +34,27 @@ map({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "Half page down", remap = false }
 map("n", "<M-j>", ":m +1<CR>", { desc = "Move line down" })
 map("n", "<M-k>", ":m -2<CR>", { desc = "Move line up" })
 
+map("n", "<leader>ww", function()
+  vim.opt.wrap = not vim.opt.wrap:get()
+end, { desc = "Toggle Word Wrap" })
+
 map({ "n", "i", "v" }, "<F1>", function()
   vim_o_toggle("colorcolumn", tostring(vim.o.textwidth), "", "Colorcolumn")
 end, { desc = "Toggle Colorcolumn" })
 
 map("n", "<leader>th", function()
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+  local enabled = vim.lsp.inlay_hint.is_enabled()
+  vim.lsp.inlay_hint.enable(not enabled)
+  -- Force update for all buffers to ensure consistency
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    -- if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, "buflisted") then
+    if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_get_option_value("buflisted", { buf = buf }) then
+      vim.lsp.inlay_hint.enable(not enabled, { bufnr = buf })
+    end
+  end
 end, { desc = "Toggle inlay hints" })
+
+map("n", "<leader>tf", "<CMD> ToggleFormatOnSave <CR>", { desc = "Toggle autoformat-on-save" })
 
 -- Blink on yank
 vim.api.nvim_create_autocmd("TextYankPost", {

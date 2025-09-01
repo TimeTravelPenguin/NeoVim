@@ -1,6 +1,7 @@
 -- Define a table mapping filetypes to their desired textwidth values
 local filetype_textwidths = {
   rust = 80,
+  typst = 90,
 }
 
 -- Create an autocommand that applies to all filetypes defined in the table keys
