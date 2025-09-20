@@ -15,6 +15,8 @@ return {
   },
 
   {
-    "pest-parser/pest.vim",
+    -- "pest-parser/pest.vim",
+    "https://github.com/TimeTravelPenguin/pest.vim",
+    branch = "lspconfig-deprecation-fix",
   },
 }
