@@ -8,6 +8,7 @@ return {
     "texlab",
     "typos",
     "typos_lsp",
+    "harper-ls",
     -- Python
     "codespell",
     "debugpy",
@@ -37,6 +38,5 @@ return {
     -- Other
     "matlab-language-server",
     "yamlfix",
-    -- "tinymist",
   },
 }
