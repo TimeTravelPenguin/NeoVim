@@ -64,4 +64,11 @@ return {
     end,
     lazy = false,
   },
+
+  {
+    "susensio/magic-bang.nvim",
+    config = true,
+    event = "BufNewFile",
+    cmd = "Bang",
+  },
 }
