@@ -1,7 +1,7 @@
 require("venv-selector").setup {
-  poetry_path = "/Users/filup/Library/Caches/pypoetry/virtualenvs",
-  anaconda_base_path = "/Users/filup/anaconda3",
-  anaconda_envs_path = "/Users/filup/anaconda3/envs",
+  -- poetry_path = "/Users/filup/Library/Caches/pypoetry/virtualenvs",
+  -- anaconda_base_path = "/Users/filup/anaconda3",
+  -- anaconda_envs_path = "/Users/filup/anaconda3/envs",
 }
 
 vim.api.nvim_create_autocmd("VimEnter", {

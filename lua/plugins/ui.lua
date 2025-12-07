@@ -146,7 +146,7 @@ return {
     lazy = false,
     setup = function()
       require("notify").setup {
-        render = "wrapped-default",
+        render = "wrapped-compact",
         stages = "fade_in_slide_out",
         timeout = 3000,
         max_width = 50,
