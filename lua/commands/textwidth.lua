@@ -1,6 +1,7 @@
 local filetype_textwidths = {
   rust = 80,
   typst = 90,
+  markdown = 90,
 }
 
 local aug = vim.api.nvim_create_augroup("SetTextWidthPerFT", { clear = true })

@@ -22,8 +22,6 @@ return {
     "haskell-debug-adapter",
     "haskell-language-server",
     "fourmolu",
-    -- Rust,
-    "rust-analyzer",
     "codelldb", -- debugger
     -- Lua
     "lua-language-server",
