@@ -28,6 +28,15 @@ vim.g.rustaceanvim = {
         vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
         -- or vim.lsp.buf.codeAction() if you don't want grouping.
       end, { silent = true, buffer = bufnr })
+
+      vim.keymap.set(
+        "n",
+        "K", -- Override Neovim's built-in hover keymap with rustaceanvim's hover actions
+        function()
+          vim.cmd.RustLsp { "hover", "actions" }
+        end,
+        { silent = true, buffer = bufnr }
+      )
     end,
     default_settings = {
       -- rust-analyzer language server configuration
@@ -102,6 +111,7 @@ local servers = {
   jsonls = {},
   leanls = {},
   ["pest-vim"] = {},
+  wgsl_analyzer = {},
 
   lua_ls = {
     on_init = function(client)
@@ -169,64 +179,12 @@ local servers = {
     init_options = {
       settings = {
         logLevel = "error",
+        lineLength = 80,
       },
     },
   },
 
-  tinymist = {
-    on_attach = function(client, bufnr)
-      local map = vim.keymap.set
-
-      map("n", "<leader>ba", function()
-        client:exec_cmd({
-          command = "tinymist.pinMain",
-          arguments = { vim.api.nvim_buf_get_name(0) },
-        }, { bufnr = bufnr })
-
-        local async = require "plenary.async"
-        local notify = require("notify").async
-        local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
-
-        async.run(function()
-          notify("Updated pinned main to " .. filename, vim.log.levels.INFO, { title = "Updating pinned main" }).events.close()
-        end)
-      end, { desc = "tinymist: Pin buffer as main", noremap = true })
-
-      map("n", "<leader>bd", function()
-        client:exec_cmd({
-          command = "tinymist.pinMain",
-          arguments = { vim.v.null },
-        }, { bufnr = bufnr })
-
-        local async = require "plenary.async"
-        local notify = require("notify").async
-        local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
-
-        async.run(function()
-          notify("Unpinned " .. filename, "info", { title = "Unpinning main" }).events.close()
-        end)
-      end, { desc = "tinymist: Unpin buffer as main", noremap = true })
-
-      vim.api.nvim_create_user_command("OpenPdf", function()
-        local filepath = vim.api.nvim_buf_get_name(0)
-        if filepath:match "%.typ$" then
-          os.execute("open " .. vim.fn.shellescape(filepath:gsub("%.typ$", ".pdf")))
-          -- replace open with your preferred pdf viewer
-          -- os.execute("zathura " .. vim.fn.shellescape(filepath:gsub("%.typ$", ".pdf")))
-        end
-      end, {})
-    end,
-    root_dir = function(bufnr, on_dir)
-      return on_dir(vim.fn.getcwd())
-    end,
-    settings = {
-      exportPdf = "onSave",
-      outputPath = "$dir/$name",
-      formatterMode = "typstyle",
-      formatterPrintWidth = 80,
-      semanticTokens = "disabled",
-    },
-  },
+  tinymist = require "configs.lspconfig.typst",
 
   typos_lsp = {
     -- Logging level of the language server. Logs appear in :LspLog. Defaults to error.

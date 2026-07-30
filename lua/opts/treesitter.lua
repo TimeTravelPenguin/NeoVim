@@ -58,5 +58,6 @@ return {
     "make",
     "just",
     "typst",
+    "wgsl",
   },
 }

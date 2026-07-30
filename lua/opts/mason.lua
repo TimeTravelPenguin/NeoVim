@@ -35,6 +35,7 @@ return {
     "shellharden",
     -- Other
     "matlab-language-server",
+    "wgsl-analyzer",
     "yamlfix",
   },
 }
