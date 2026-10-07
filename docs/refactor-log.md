@@ -364,3 +364,94 @@ NVIM_LOG_FILE=/dev/null nvim --headless -i NONE -n \
 
 Restart Neovim to load the updated Lazy specification. The user's Sync
 lockfile updates are preserved and are not part of this fix.
+
+### Follow-up: Cargo context for Rust diagnostics
+
+Reviewed the referenced chat, "Fix Neovim diagnostics display", and adapted
+its final unapplied proposal to `configs/lsp/rust.lua`. The user selected the
+draft's one-Cargo-project-per-Neovim-session approach. No firmware package
+names, target triples, or project paths are hardcoded in the configuration.
+
+At Rust Analyzer startup, the settings callback finds the Cargo manifest
+above Neovim's current directory. Its generated check/build-script commands
+change to that project directory before running `cargo clippy`/`cargo check`.
+Cargo therefore selects the opened package and reads its normal configuration
+hierarchy and toolchain, including member-local configuration that checks
+launched from a workspace root miss. The commands emit JSON for Rust Analyzer
+and use quoted positional arguments for paths and command names.
+
+The nearest member/intermediate `.cargo/config` or `.cargo/config.toml` below
+the workspace root is forwarded through `cargo.configPath` for supported Rust
+Analyzer versions. The legacy `config` filename takes precedence when both
+exist, matching Cargo. Explicit config paths and custom override commands are
+preserved. Existing build-script/check options are extended instead of being
+replaced, and generated overrides default to one invocation rather than
+repeating the same project check for every linked workspace.
+
+As discussed in the referenced draft, the blanket `cargo.features = "all"`
+override is removed. Generated commands use Cargo's default features and
+targets; they do not add `--workspace`, `--all-features`, or `--all-targets`.
+Rust Analyzer's generated feature/target/extra-argument flags and `--config`
+arguments do not apply to these explicit commands. Retaining the associated
+settings does not make the wrappers forward them: compiler checks rely on
+Cargo's normal discovery from the selected directory. Custom override
+commands remain responsible for their own flags. Rust hover/code-action
+mappings and the existing Clippy selection are preserved.
+
+The session context is evaluated at server startup or settings reload.
+Opening another project's files does not automatically switch it; use a
+separate editor session for projects with different targets/configuration.
+Cargo compiler checks read the full configuration hierarchy. Code analysis
+only receives the nearest additional config file and can still miss
+intermediate configuration files. The installed nightly Rust Analyzer
+supports `cargo.configPath`; the older installed stable version does not.
+This change does not claim universal analysis support for every Cargo setup.
+
+Neovim 0.12 already implements `workspace/diagnostic/refresh`, and Rustaceanvim
+already selects server-side Rust file watching. The older warning in the
+referenced log was from a 0.11 session. No diagnostic-display, watcher,
+severity, shell-limit, or formatting settings were changed for this fix.
+
+Validation after normal configuration startup on Neovim 0.12.5 and 0.11.7:
+
+- The existing general smoke check passes, including plugin preservation,
+  lockfiles, LSP registration, and the version-specific runtime checks.
+- `scripts/rust-settings-smoke.lua` passes on both versions. It checks the
+  actual settings callback, member/intermediate config discovery, legacy
+  filename precedence, explicit-option preservation, unchanged input tables,
+  and safe handling of absent roots. It executes the generated shell commands
+  against a temporary Cargo argument sink, including project paths with
+  spaces, quotes, and literal shell metacharacters.
+- Real Rustaceanvim/Rust Analyzer sessions pass a four-save compiler diagnostic
+  cycle on each version for firmware, desktop, and standalone fixtures:
+  no compiler errors, an `E0425` error, the repaired file, then another `E0425`
+  error. Each cycle uses the same client and completes check progress after
+  every save. Firmware uses the installed nightly toolchain and
+  `thumbv7em-none-eabihf`; standalone uses installed stable. No downloads or
+  edits to user projects are needed.
+- Baseline settings reproduce wrong-target, missing-hierarchy, or forced
+  optional-feature errors in those same fixtures on both editor versions.
+- Nested Cargo configuration fixtures also confirm the analysis limitation:
+  Cargo compiler checks pass, but Rust Analyzer retains a native `macro-error`
+  when an intermediate configuration's `rustflags` are required. The stable
+  analyzer also ignores the unsupported `cargo.configPath` setting. These
+  negative checks are recorded separately from the passing compiler cycles.
+
+Temporary integration fixtures, result JSON, and logs are retained locally
+under `/private/tmp/nvim-rust-session-proof-wybiaddl`; `summary.json` records
+the six before/after cases and `cargo-hierarchy-proof.json` the Cargo checks.
+
+Run the persistent settings check after normal startup:
+
+```sh
+NVIM_LOG_FILE=/dev/null nvim --headless -i NONE -n \
+  '+luafile /Users/filup/.config/nvim/scripts/rust-settings-smoke.lua'
+```
+
+Restart Neovim to load this change, launching it from the Cargo member/project
+directory whose checks should run for the session. The synthetic save cycles
+validate compiler diagnostic delivery and clearing; they do not establish that
+every cause of intermittent stale diagnostics or resource exhaustion is fixed.
+
+References: [Cargo configuration hierarchy](https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure),
+[Rust Analyzer overrides and config paths](https://rust-analyzer.github.io/book/configuration.html).
