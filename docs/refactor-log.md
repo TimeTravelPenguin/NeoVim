@@ -265,3 +265,21 @@ Regression evidence:
 
 Restart Neovim before retrying `:Lazy sync`, so the running Lazy specification
 contains the new branch declaration.
+
+### Follow-up: restore centred statusline progress
+
+Moving the custom statusline from `base46` to the supported `ui` table made
+its previously ignored order active. That order had only one `%=` alignment
+separator, so LSP progress such as `cargo clippy` joined the right-aligned
+modules. It also omitted the cursor position that NvChad's default displayed.
+
+The order now places `lsp_msg` between two `%=` separators and restores the
+cursor module at the end. The virtual-environment callback and all existing
+modules remain present. This preserves the previous effective layout while
+retaining the correctly placed custom configuration.
+
+Neovim's native statusline evaluator and the installed NvChad renderer verify
+the regression and correction on both 0.12.5 and 0.11.7. In a 200-column Rust
+buffer, progress moved from column 180 back to column 97, matching the
+pre-refactor footer exactly; the rendered cursor module is present too.
+The user's lockfile updates from their successful Sync were left untouched.

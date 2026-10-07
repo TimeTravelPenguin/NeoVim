@@ -22,7 +22,7 @@ M.ui = {
         return require("venv-selector.statusline.nvchad").render()
       end,
     },
-    order = { "mode", "file", "git", "%=", "lsp_msg", "diagnostics", "venv", "lsp", "cwd" }, -- "venv" is our venvselect module here
+    order = { "mode", "file", "git", "%=", "lsp_msg", "%=", "diagnostics", "venv", "lsp", "cwd", "cursor" },
   },
 }
 
