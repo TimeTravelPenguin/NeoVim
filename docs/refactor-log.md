@@ -177,3 +177,58 @@ These checks establish startup and configuration compatibility. They do not
 replace project-level testing of Python virtual environments/debugging,
 Rust/Haskell servers, Typst preview, authenticated Copilot, and interactive UI
 behavior.
+
+### Local activation and rollback
+
+The tested upgrade is installed and active:
+
+- `/Users/filup/.local/bin/nvim` points to
+  `/Users/filup/.local/opt/nvim-0.12.5/bin/nvim`.
+- `/Users/filup/.local/bin/tree-sitter` points to
+  `/Users/filup/.local/opt/tree-sitter-0.27.0/bin/tree-sitter`.
+- Modern plugins and parser/query assets are installed in the dedicated
+  `lazy-0.12` and `site-0.12` directories listed above.
+- All 67 installed plugin commits match the modern lockfile. All 67 original
+  plugin commits still match the legacy lockfile.
+- The 47 generated query symlinks were relocated to the installed plugin
+  directory and checked for missing targets. The active configuration does
+  not depend on the temporary test profile.
+
+The modern smoke check passed again after activation against the real
+configuration and dependency paths, with temporary state/cache directories.
+The corrected NvChad statusline also rendered successfully through Neovim's
+statusline evaluation API.
+The retained 0.11.7 editor also passed against the real legacy paths after
+the final structural moves. No original editor, plugin, parser, inactive
+configuration, or Conform installation was deleted.
+
+To use the old editor immediately, run:
+
+```sh
+/Users/filup/.local/opt/nvim-0.11.7/bin/nvim
+```
+
+It selects the legacy lockfile and plugin directory automatically; no Git
+checkout is required. To make that version the default again:
+
+```sh
+ln -sfn /Users/filup/.local/opt/nvim-0.11.7/bin/nvim \
+  /Users/filup/.local/bin/nvim
+```
+
+To restore the pre-refactor source separately, the baseline commit is
+`65b8315`. Keep the desired source and editor version aligned; the current
+branch supports both versions without sharing their Treesitter assets.
+
+### Commit trail
+
+| Commit | Step |
+| --- | --- |
+| `65b8315` | Preserve the user's preexisting edits |
+| `0c05099` | Record scope and rollback plan |
+| `6b294ea` | Split plugin and language ownership |
+| `9d6e4d0` | Fix verified LSP and plugin hook issues |
+| `39dddff` | Add the tested 0.12 migration and independent profiles |
+| `c250954` | Finish documentation, diagnostics, and utility ownership |
+
+The following documentation commit records activation and final verification.
