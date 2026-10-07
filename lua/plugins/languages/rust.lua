@@ -5,8 +5,12 @@ return {
       "nvim-lua/plenary.nvim",
       "mfussenegger/nvim-dap",
     },
+
     version = "^8", -- Recommended
     lazy = false, -- This plugin is already lazy
+    init = function()
+      require("configs.lsp.rust")()
+    end,
   },
 
   {

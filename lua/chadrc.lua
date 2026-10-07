@@ -13,9 +13,14 @@ M.base46 = {
   -- 	Comment = { italic = true },
   -- 	["@comment"] = { italic = true },
   -- },
+}
+
+M.ui = {
   statusline = {
     modules = {
-      venv = require("venv-selector.statusline.nvchad").render,
+      venv = function()
+        return require("venv-selector.statusline.nvchad").render()
+      end,
     },
     order = { "mode", "file", "git", "%=", "lsp_msg", "diagnostics", "venv", "lsp", "cwd" }, -- "venv" is our venvselect module here
   },

@@ -1,4 +1,8 @@
 return function(on_attach)
+  on_attach = on_attach or function(client, bufnr)
+    require("nvchad.configs.lspconfig").on_attach(client, bufnr)
+  end
+
   vim.g.rustaceanvim = {
     tools = {},
 

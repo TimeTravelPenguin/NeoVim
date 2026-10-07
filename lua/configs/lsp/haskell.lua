@@ -1,4 +1,8 @@
 return function(on_attach)
+  on_attach = on_attach or function(client, bufnr)
+    require("nvchad.configs.lspconfig").on_attach(client, bufnr)
+  end
+
   vim.g.haskell_tools = {
     ---@type ToolsOpts
     tools = {
@@ -15,6 +19,7 @@ return function(on_attach)
       on_attach = function(client, bufnr, ht)
         on_attach(client, bufnr)
 
+        local map = vim.keymap.set
         local opts = { noremap = true, silent = true, buffer = bufnr }
 
         -- code lens

@@ -14,9 +14,6 @@ local common = {
 
 require("pest-vim").setup {}
 
-require("configs.lsp.rust")(on_attach)
-require("configs.lsp.haskell")(on_attach)
-
 local servers = require("configs.lsp.servers")(on_attach, capabilities)
 
 for name, opts in pairs(servers) do

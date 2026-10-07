@@ -6,20 +6,20 @@ return function(on_attach, capabilities)
     jsonls = {},
     just = {
       filetypes = { "just" },
-      root_dir = function(fname)
-        return vim.fs.root(fname, { ".git", "justfile" })
+      root_dir = function(bufnr, on_dir)
+        on_dir(vim.fs.root(bufnr, { ".git", "justfile" }))
       end,
       on_attach = on_attach,
       capabilities = capabilities,
     },
-    leanls = {},
-    ["pest-vim"] = {},
+    -- Lean and Pest are configured by their plugin integrations.
     wgsl_analyzer = {},
 
     lua_ls = {
       on_init = function(client)
-        local path = client.workspace_folders[1].name
-        if vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc") then
+        local workspace = client.workspace_folders and client.workspace_folders[1]
+        local path = workspace and workspace.name
+        if path and (vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc")) then
           return
         end
 
@@ -103,7 +103,7 @@ return function(on_attach, capabilities)
       },
     },
 
-    ["harper-ls"] = {
+    harper_ls = {
       settings = {
         ["harper-ls"] = {
           linters = {

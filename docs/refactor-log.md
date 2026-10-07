@@ -68,3 +68,39 @@ match the baseline. Separate extraction checks compared the moved editor and
 language settings and callbacks. The lockfile retains all 67 original entries,
 including entries not present in the resolved specification; no cleanup was
 performed.
+
+### Small configuration fixes
+
+- Rust and Haskell settings are assigned from their plugin `init` callbacks,
+  before the integrations read them. NvChad attachment support is resolved
+  later when a server actually attaches; Haskell mappings use a local setter.
+- Just uses the native `(bufnr, on_dir)` root callback. Harper is registered as
+  `harper_ls`, retaining the server's `harper-ls` settings key.
+- Pest and Lean retain their plugin integrations as the owners of their LSPs;
+  invalid duplicate generic registrations no longer shadow those integrations.
+- Lua initialization handles missing or empty workspace folders while still
+  respecting project `.luarc.json` and `.luarc.jsonc` files.
+- Copilot LSP is enabled after its runtime files are available, and its
+  companion spec uses Lazy's `dependencies` field.
+- Notify uses supported `opts`; Presence receives its existing options once
+  instead of being configured twice.
+- The venv statusline module is under NvChad's `ui.statusline` schema, with its
+  renderer required only when the module renders.
+
+Validation: repeatable isolated Neovim checks passed for early globals,
+preserved Rust/Haskell mappings, Just's callback, Harper settings, Pest/Lean
+ownership, standalone and project Lua initialization, Copilot enable order,
+and Notify/Presence configuration through Lazy's real configuration loader.
+Theme selection and the existing mapping order are preserved.
+
+### Decisions deliberately deferred
+
+- Conform removal and choosing the replacement formatting pipeline.
+- Copilot Tab/Esc versus NvChad shortcuts, and the DAP `df`/`ds` conflicts.
+- Typst project-root selection and the scope of its pin/unpin shortcuts.
+- The obsolete `VenvSelectCached` shortcut and inactive legacy configuration
+  files; none were deleted.
+- Activating dormant None-ls diagnostics, Blink, tmux navigation, or standalone
+  theme integrations.
+- Rustaceanvim/Haskell Tools major upgrades, diagnostic filter changes, and
+  debugger dependency/listener cleanup.

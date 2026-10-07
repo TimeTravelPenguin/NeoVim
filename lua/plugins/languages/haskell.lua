@@ -5,7 +5,11 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
     },
+
     version = "^4",
     lazy = false, -- This plugin is already lazy
+    init = function()
+      require("configs.lsp.haskell")()
+    end,
   },
 }

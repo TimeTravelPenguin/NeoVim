@@ -144,13 +144,11 @@ return {
   {
     "rcarriga/nvim-notify",
     lazy = false,
-    setup = function()
-      require("notify").setup {
-        render = "wrapped-compact",
-        stages = "fade_in_slide_out",
-        timeout = 3000,
-        max_width = 50,
-      }
-    end,
+    opts = {
+      render = "wrapped-compact",
+      stages = "fade_in_slide_out",
+      timeout = 3000,
+      max_width = 50,
+    },
   },
 }
