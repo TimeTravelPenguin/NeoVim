@@ -8,6 +8,31 @@ local function check()
     assert(lazy_config.plugins[name], "Plugin missing from resolved configuration: " .. name)
   end
 
+  -- Exercise Lazy's real lock writer without touching the user's lockfile.
+  local lock_manager = require "lazy.manage.lock"
+  local original_lockfile = lazy_config.options.lockfile
+  local original_lock = lock_manager.lock
+  local original_loaded = lock_manager._loaded
+  local temporary_lockfile = vim.fn.tempname() .. ".json"
+  lazy_config.options.lockfile = temporary_lockfile
+  lock_manager._loaded = false
+  local saved, save_error = pcall(lock_manager.update)
+  lazy_config.options.lockfile = original_lockfile
+  lock_manager.lock = original_lock
+  lock_manager._loaded = original_loaded
+
+  if not saved then
+    vim.fn.delete(temporary_lockfile)
+    error("Lazy lock persistence failed: " .. tostring(save_error))
+  end
+
+  local saved_lock = vim.json.decode(table.concat(vim.fn.readfile(temporary_lockfile), "\n"))
+  vim.fn.delete(temporary_lockfile)
+
+  for name, entry in pairs(lock) do
+    assert(saved_lock[name] and saved_lock[name].commit == entry.commit, "Lock writer changed a plugin revision: " .. name)
+  end
+
   for _, path in ipairs(vim.fn.glob(vim.fn.stdpath("config") .. "/**/*.lua", false, true)) do
     assert(loadfile(path), "Invalid Lua: " .. path)
   end
@@ -94,7 +119,7 @@ local function check()
 
   assert(vim.lsp.config.pest_ls.cmd, "Pest integration did not configure its LSP")
   assert(vim.lsp.config.copilot_ls.cmd, "Copilot runtime was not available when enabled")
-  local common = "plugin preservation, Lua syntax, install command, LSP registration"
+  local common = "plugin preservation, lock persistence, Lua syntax, install command, LSP registration"
   local modern = ", runtime isolation, parser/query loading, Markdown injections, Telescope/LSP previews"
   print("PASS: " .. common .. (profile.modern and modern or ", legacy 0.11 startup"))
 end

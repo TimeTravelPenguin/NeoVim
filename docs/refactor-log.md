@@ -232,3 +232,36 @@ branch supports both versions without sharing their Treesitter assets.
 | `c250954` | Finish documentation, diagnostics, and utility ownership |
 
 The following documentation commit records activation and final verification.
+
+### Follow-up: Lazy sync lockfile assertion
+
+The first user-run `:Lazy sync` exposed a gap in the initial migration checks.
+The Telescope checkout had been cloned directly from release tag `v0.2.1`.
+It therefore had a detached HEAD, a tag-only fetch refspec, and no
+`origin/HEAD`. Lazy's lock writer needs a branch even for a version-pinned
+plugin; it could not infer one and asserted in `lazy/manage/lock.lua:28`.
+The writer opens the lockfile before checking each plugin, leaving the file
+truncated to `{\n` when that assertion fails.
+
+`plugins/telescope.lua` now explicitly declares `branch = "master"` alongside
+`version = "0.2.1"`. Lazy still selects the same release and commit. No plugin
+source or version was changed. The broken lockfile was regenerated through
+Lazy's real lock writer; its 67 installed revisions were unchanged, and the
+restored file matches the committed lockfile exactly.
+
+Regression evidence:
+
+- The real Lazy Git and lock modules reproduce the assertion against the
+  detached checkout when the branch is unspecified, then save successfully
+  with the explicit branch while retaining Telescope 0.2.1.
+- `scripts/smoke.lua` now exercises Lazy's real lock writer against a temporary
+  file, restores the manager's original state, and checks that every recorded
+  plugin revision is preserved. It passes on both 0.12.5 and 0.11.7.
+- The full Lazy clean/install/update/lock persistence lifecycle completed in
+  physical copies of the configuration, plugins, and parsers, with isolated
+  XDG directories and existing revisions held by `lockfile = true`. All tasks
+  passed, no plugins were selected for removal, and all 67 lock entries match
+  the resulting checkouts. Live plugin revisions were unaffected by this test.
+
+Restart Neovim before retrying `:Lazy sync`, so the running Lazy specification
+contains the new branch declaration.
