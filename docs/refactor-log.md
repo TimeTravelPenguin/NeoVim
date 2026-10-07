@@ -312,3 +312,55 @@ they do not send requests or validate authenticated completions. The full
 configuration smoke checks also pass on both versions, and the user's Sync
 lockfile updates remain unchanged.
 Restart Neovim to stop the client and clear previews in an existing session.
+
+### Follow-up: restore format on the first save
+
+Conform inherited `lazy = true`, but its specification had no loading event.
+In a fresh session it stayed unloaded, so its `BufWritePre` formatting hook
+did not exist. `ToggleFormatOnSave` changed the intended flags but could not
+activate that hook. Manually requiring Conform made subsequent saves format.
+The missing trigger was also present in the pre-refactor specification.
+
+The existing Conform specification now loads on `BufWritePre`, following the
+[documented Lazy loading recipe](https://github.com/stevearc/conform.nvim/blob/master/doc/recipes.md#lazy-loading-with-lazynvim).
+Lazy replays the write event for the newly registered formatting group, so the
+first save formats before writing to disk. Formatter choices, the 500 ms
+timeout, LSP fallback, and both toggle scopes are unchanged. The installed
+Conform versions still support the existing `lsp_fallback = true` option.
+
+`ToggleFormatOnSave` without a bang toggles the global restriction;
+`ToggleFormatOnSave!` toggles only the current buffer's restriction. A global
+restriction takes precedence, and neither toggle resets the other scope.
+The command's notification reports the flag in the scope just toggled: a
+buffer-local `true` message does not override a global disable.
+
+Isolated checks using real Lazy, Conform, and the installed StyLua reproduce
+the failure and confirm that the save trigger restores first-save formatting
+on both 0.12.5 and 0.11.7. They also verify exactly one Conform save hook and
+the global/buffer toggle behavior against buffer contents and saved files.
+
+The reusable `scripts/formatting-smoke.lua` check runs after normal
+configuration startup and performs 18 real saves with StyLua in each editor
+version. It verifies the first-save Lazy activation before requiring Conform,
+both toggle scopes across two buffers, independent state and global
+precedence, and matching buffer/disk contents. It uses temporary fixtures and
+removes them on success. The same normal-startup first-save test fails in a
+temporary configuration copy with only the new event removed, confirming the
+loading trigger as the cause. The broader configuration smoke checks also
+pass on both editor versions.
+
+A separate normal-startup 0.12.5 test uses the installed Rust Analyzer and
+Rustfmt in a temporary, dependency-free Cargo project with Cargo offline.
+After the formatting-capable server attaches, Conform is still unloaded and
+no external Rust formatter is configured. The first save formats both the
+buffer and file through LSP fallback. Globally disabling formatting leaves
+the next unformatted save untouched, and re-enabling it restores formatting.
+No user project files or tool installations are changed by these checks.
+
+```sh
+NVIM_LOG_FILE=/dev/null nvim --headless -i NONE -n \
+  '+luafile /Users/filup/.config/nvim/scripts/formatting-smoke.lua'
+```
+
+Restart Neovim to load the updated Lazy specification. The user's Sync
+lockfile updates are preserved and are not part of this fix.
