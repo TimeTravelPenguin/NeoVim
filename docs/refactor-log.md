@@ -44,3 +44,27 @@ and a user session; automated smoke tests do not establish that coverage.
 5. Upgrade Treesitter and Telescope for Neovim 0.12 and test isolated assets.
 
 Details and test results are appended as each step is completed.
+
+### Plugin and language ownership
+
+- `plugins/init.lua` imports the nested language specifications explicitly.
+- `plugins/formatting.lua` owns Conform and None-ls; both remain configured.
+- `plugins/completion.lua` owns LazyDev, CMP additions, and the existing Blink
+  configuration; their original activation behavior is retained.
+- `plugins/lsp.lua` and `plugins/treesitter.lua` own the NvChad overrides.
+- `plugins/ai.lua` owns both Copilot integrations.
+- `plugins/languages/` contains Python, Rust, Haskell, Lean, Typst, Markdown,
+  and D2 specifications. The former root Rust file was moved here.
+- `configs/lsp/` contains the shared registration, server settings, Rust and
+  Haskell callbacks, and Typst helpers. The two existing `configs/lspconfig`
+  require paths forward to their new owners.
+- Generic editing, documentation generation, diagnostics, UI, community
+  imports, debugging, commands, mappings, and inactive configuration files
+  remain available in their existing dedicated modules.
+
+Validation: all Lua files compile; all 66 resolved Lazy plugin names,
+repositories, version constraints, activation triggers, and key definitions
+match the baseline. Separate extraction checks compared the moved editor and
+language settings and callbacks. The lockfile retains all 67 original entries,
+including entries not present in the resolved specification; no cleanup was
+performed.

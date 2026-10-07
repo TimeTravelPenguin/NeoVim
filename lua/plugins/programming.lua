@@ -33,29 +33,6 @@ return {
   },
 
   {
-    "linux-cultist/venv-selector.nvim",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "mfussenegger/nvim-dap",
-      "mfussenegger/nvim-dap-python",
-      { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
-    },
-    opts = {
-      options = {
-        on_telescope_result_callback = function(filename)
-          return filename:gsub(os.getenv "HOME", "~"):gsub("/bin/python", "")
-        end,
-      },
-    },
-    -- ft = "python",
-    lazy = false,
-    keys = {
-      { "<leader>vs", "<cmd>VenvSelect<cr>" },
-      { "<leader>vc", "<cmd>VenvSelectCached<cr>" },
-    },
-  },
-
-  {
     "folke/trouble.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim" },
     cmd = { "Trouble", "TroubleToggle", "TodoTrouble" },
@@ -153,32 +130,4 @@ return {
     end,
   },
 
-  {
-    "mrcjkb/haskell-tools.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-    },
-    version = "^4",
-    lazy = false, -- This plugin is already lazy
-  },
-
-  {
-    "Julian/lean.nvim",
-    event = { "BufReadPre *.lean", "BufNewFile *.lean" },
-
-    dependencies = {
-      -- optional dependencies:
-
-      "nvim-telescope/telescope.nvim", -- for Lean-specific pickers
-      -- 'andymass/vim-matchup',          -- for enhanced % motion behavior
-      -- 'andrewradev/switch.vim',        -- for switch support
-      -- 'tomtom/tcomment_vim',           -- for commenting
-    },
-
-    ---@type lean.Config
-    opts = { -- see the manual for full configuration options
-      mappings = true,
-    },
-  },
 }
