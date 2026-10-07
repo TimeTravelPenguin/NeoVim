@@ -10,7 +10,7 @@ options.formatters_by_ft = {
   css = { "prettier" },
   xml = { "xmllint" },
   yaml = { "prettier" },
-  toml = { "taplo" },
+  -- toml = { "taplo" },
   javascript = { "prettier" },
   haskell = { "fourmolu" },
 }

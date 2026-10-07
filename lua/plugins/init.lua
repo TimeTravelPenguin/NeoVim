@@ -8,10 +8,6 @@ return {
   },
 
   {
-    "williamboman/mason.nvim",
-    opts = require "opts.mason",
-  },
-  {
 
     "neovim/nvim-lspconfig",
     config = function()

@@ -15,42 +15,34 @@ local common = {
 require("pest-vim").setup {}
 
 vim.g.rustaceanvim = {
-  -- Plugin configuration
   tools = {},
-  -- LSP configuration
+
   server = {
     on_attach = function(client, bufnr)
       on_attach(client, bufnr)
 
-      -- you can also put keymaps in here
-      -- local bufnr = vim.api.nvim_get_current_buf()
       vim.keymap.set("n", "<leader>ca", function()
-        vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
-        -- or vim.lsp.buf.codeAction() if you don't want grouping.
+        vim.cmd.RustLsp "codeAction"
       end, { silent = true, buffer = bufnr })
 
-      vim.keymap.set(
-        "n",
-        "K", -- Override Neovim's built-in hover keymap with rustaceanvim's hover actions
-        function()
-          vim.cmd.RustLsp { "hover", "actions" }
-        end,
-        { silent = true, buffer = bufnr }
-      )
+      vim.keymap.set("n", "K", function()
+        vim.cmd.RustLsp { "hover", "actions" }
+      end, { silent = true, buffer = bufnr })
     end,
+
     default_settings = {
-      -- rust-analyzer language server configuration
-      ["rust_analyzer"] = {
+      ["rust-analyzer"] = {
         cargo = {
-          allFeatures = true,
+          features = "all",
         },
-        checkOnSave = {
+
+        check = {
           command = "clippy",
         },
       },
     },
   },
-  -- DAP configuration
+
   dap = {},
 }
 
@@ -109,6 +101,14 @@ local servers = {
   cssls = {},
   docker_compose_language_service = {},
   jsonls = {},
+  just = {
+    filetypes = { "just" },
+    root_dir = function(fname)
+      return vim.fs.root(fname, { ".git", "justfile" })
+    end,
+    on_attach = on_attach,
+    capabilities = capabilities,
+  },
   leanls = {},
   ["pest-vim"] = {},
   wgsl_analyzer = {},
@@ -213,6 +213,12 @@ local servers = {
         dialect = "Australian",
       },
     },
+  },
+
+  tombi = {
+    cmd = { "tombi", "lsp" },
+    filetypes = { "toml" },
+    root_markers = { "tombi.toml", "pyproject.toml", ".git" },
   },
 }
 

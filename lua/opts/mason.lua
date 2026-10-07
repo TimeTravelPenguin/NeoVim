@@ -4,6 +4,7 @@ return {
     "pest-language-server",
     "html-lsp",
     "css-lsp",
+    "just-lsp",
     "prettier",
     "texlab",
     "typos",

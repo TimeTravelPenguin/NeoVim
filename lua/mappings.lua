@@ -25,6 +25,14 @@ map("n", "<leader>ln", "<cmd>set nu!<CR>", { desc = "Toggle Line number" })
 map("n", "<leader>lrn", "<cmd>set rnu!<CR>", { desc = "Toggle Relative number" })
 map("x", "p", "P", { silent = true, remap = false, desc = "Paste without yanking" })
 
+map("n", "<leader>py", function()
+  local file_path = vim.fn.expand "%:p"
+  local filename = vim.fn.expand "%:t"
+
+  vim.fn.setreg("+", file_path)
+  vim.notify(("%s's path has been copied to the clipboard"):format(filename))
+end, { desc = "Copy full file path" })
+
 map("n", "<C-s>", "<CMD> w <CR>", { desc = "Save file" })
 map({ "i", "v" }, "<C-s>", "<ESC> <CMD> w <CR>", { desc = "Save file and exit mode" })
 
