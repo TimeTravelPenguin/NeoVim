@@ -62,6 +62,12 @@ Details and test results are appended as each step is completed.
   imports, debugging, commands, mappings, and inactive configuration files
   remain available in their existing dedicated modules.
 
+The final ownership pass separates the remaining generic programming specs:
+`plugins/documentation.lua` owns Neogen, `plugins/diagnostics.lua` owns Trouble
+and TODO comments, and `plugins/tools.lua` retains the former Lua utility
+specification for nvim-nio. These are source moves with no option or trigger
+changes.
+
 Validation: all Lua files compile; all 66 resolved Lazy plugin names,
 repositories, version constraints, activation triggers, and key definitions
 match the baseline. Separate extraction checks compared the moved editor and
