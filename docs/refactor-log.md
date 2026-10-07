@@ -104,3 +104,70 @@ Theme selection and the existing mapping order are preserved.
   theme integrations.
 - Rustaceanvim/Haskell Tools major upgrades, diagnostic filter changes, and
   debugger dependency/listener cleanup.
+
+### Neovim 0.12 dependency migration
+
+Target: [Neovim 0.12.5](https://github.com/neovim/neovim/releases/tag/v0.12.5),
+recorded in `.nvim-version`.
+
+Only two plugin lock entries change:
+
+| Dependency | Neovim 0.11 rollback | Neovim 0.12 target |
+| --- | --- | --- |
+| nvim-treesitter | `master`, `cf12346a3414fa1b06af75c79faebe7f76df080a` | `main`, `e289100ff98969e118c702199d88b764ce9e7fdf` |
+| Telescope | 0.1.8, `a0bbec21143c7bc5f8bb02e0005fa0b982edc026` | [0.2.1](https://github.com/nvim-telescope/telescope.nvim/releases/tag/v0.2.1), `3333a52ff548ba0a68af6d8da1e54f9cd96e9179` |
+
+The Treesitter rewrite needs a separate
+[Treesitter CLI >= 0.26.1](https://github.com/nvim-treesitter/nvim-treesitter/blob/main/README.md).
+The isolated build used the official
+[0.27.0 CLI](https://github.com/tree-sitter/tree-sitter/releases/tag/v0.27.0).
+The other 65 lock entries retain their baseline revisions.
+
+`configs/profile.lua` selects independent assets from the running editor
+version. With the default local paths:
+
+| Asset | Neovim 0.11 | Neovim 0.12 |
+| --- | --- | --- |
+| Plugin directory | `~/.local/share/nvim/lazy` | `~/.local/share/nvim/lazy-0.12` |
+| Lockfile | `lazy-lock-0.11.json` | `lazy-lock.json` |
+| Parser/query assets | Original legacy locations, including the Treesitter plugin | `~/.local/share/nvim/site-0.12` |
+
+The legacy lockfile is an exact copy of the initial 67-entry lock. Treesitter
+chooses the matching API and branch for each editor. On 0.12, Lazy retains the
+prepared runtime path so it cannot reintroduce the old `site` directory.
+
+Treesitter loads eagerly, uses the rewrite's `setup` API on 0.12, and keeps the
+legacy setup API on 0.11. Unsupported inherited lazy command/event handlers are
+cleared. The explicit `TSInstallAll` command is registered after NvChad's
+autocommands so NvChad cannot replace the version-aware implementation.
+Startup does not download parsers. The original list of 42 languages remains
+unchanged; the 0.12 install command additionally includes the existing D2
+integration. `TSUpdate` remains the build/update command.
+
+The conflicting Telescope `0.1.x` constraint in the Python dependency was
+removed; `plugins/telescope.lua` now owns the 0.2.1 version constraint. The
+legacy lock still restores the original Telescope for rollback.
+
+A fresh Base46 cache is generated when its defaults file is absent. This
+allows a clean isolated profile to start rather than assuming an existing
+theme cache.
+
+The isolated parser build installed 48 languages: the requested 43, plus five
+dependencies selected by Treesitter. Modern smoke checks passed parser loading
+and highlight queries for all 43 requested languages, fenced Lua injection in
+Markdown, node text extraction, Telescope Treesitter highlighting, Markdown
+LSP floating previews, the final install command, and native LSP registration.
+The old editor is checked with the same plugin-preservation and registration
+checks using its legacy installation API.
+
+The reusable smoke check runs after normal configuration startup:
+
+```sh
+NVIM_LOG_FILE=/dev/null nvim --headless -i NONE -n \
+  '+luafile /Users/filup/.config/nvim/scripts/smoke.lua'
+```
+
+These checks establish startup and configuration compatibility. They do not
+replace project-level testing of Python virtual environments/debugging,
+Rust/Haskell servers, Typst preview, authenticated Copilot, and interactive UI
+behavior.

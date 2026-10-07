@@ -1,4 +1,8 @@
+local profile = require "configs.profile"
+
 return {
+  root = profile.plugin_root,
+  lockfile = profile.lockfile,
   defaults = { lazy = true },
   install = { colorscheme = { "nvchad" } },
 
@@ -13,6 +17,8 @@ return {
 
   performance = {
     rtp = {
+      -- Preserve the version-specific parser paths prepared before Lazy loads.
+      reset = not profile.modern,
       disabled_plugins = {
         "2html_plugin",
         "tohtml",

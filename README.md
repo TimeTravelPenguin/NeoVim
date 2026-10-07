@@ -7,3 +7,11 @@
 # Credits
 
 1) Lazyvim starter https://github.com/LazyVim/starter as nvchad's starter was inspired by Lazyvim's . It made a lot of things easier!
+
+# Local configuration
+
+The plugin and language layout, migration steps, verification results, and
+rollback instructions are recorded in [docs/refactor-log.md](docs/refactor-log.md).
+
+The target editor version is recorded in `.nvim-version`. Neovim 0.11.7 remains
+supported as a rollback path with its own lockfile and plugin directory.
