@@ -29,7 +29,8 @@ return {
       end, { desc = "Clear Copilot suggestion or fallback" })
     end,
     config = function()
-      vim.lsp.enable "copilot_ls"
+      -- Keep the integration installed; copilot.lua owns inline suggestions.
+      vim.lsp.enable("copilot_ls", false)
     end,
   },
 
@@ -42,6 +43,10 @@ return {
     cmd = { "Copilot" },
     config = function()
       require("copilot").setup {
+        nes = {
+          enabled = false,
+        },
+
         suggestion = {
           auto_trigger = true,
           keymap = {

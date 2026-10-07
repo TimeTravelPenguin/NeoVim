@@ -283,3 +283,32 @@ the regression and correction on both 0.12.5 and 0.11.7. In a 200-column Rust
 buffer, progress moved from column 180 back to column 97, matching the
 pre-refactor footer exactly; the rendered cursor module is present too.
 The user's lockfile updates from their successful Sync were left untouched.
+
+### Follow-up: restore Copilot inline suggestions only
+
+The user confirmed that the coloured text below the current line was suggested
+replacement code and requested the previous inline-only behaviour. The earlier
+loading fix made the standalone `copilot_ls` client active: its original enable
+call ran before Lazy added the plugin's LSP configuration to the runtime.
+Once active, `copilot-lsp` registers text-change hooks and displays next-edit
+previews with deletion highlights and added virtual lines.
+
+`plugins/ai.lua` now explicitly disables automatic activation of `copilot_ls`
+and sets `copilot.lua`'s `nes.enabled` to `false`. Both plugin specifications,
+their dependency relationship, and existing mappings remain present. Ordinary
+inline suggestions retain automatic triggering and the existing `<C-l>`
+accept-line mapping. This restores the requested behaviour without removing
+either plugin. The separate server is disabled rather than relying on an
+undocumented server setting: the installed plugin's text-change hooks request
+and render edits without checking that setting.
+
+The inline-only configuration follows the documented
+[Copilot options](https://github.com/zbirenbaum/copilot.lua#nes-next-edit-suggestion).
+Focused checks using the actual plugin specifications and installed Copilot
+configuration modules pass on both 0.12.5 and 0.11.7: the standalone client is
+disabled, no next-edit text-change hooks are registered, and inline suggestions
+and their existing options remain enabled. The checks stub server startup, so
+they do not send requests or validate authenticated completions. The full
+configuration smoke checks also pass on both versions, and the user's Sync
+lockfile updates remain unchanged.
+Restart Neovim to stop the client and clear previews in an existing session.
