@@ -1,0 +1,165 @@
+{
+  "manual": [
+    {
+      "name": "nvim",
+      "repository": "neovim/neovim",
+      "asset": "nvim-macos-{arch}.tar.gz",
+      "architectures": { "arm64": "arm64", "x86_64": "x86_64" },
+      "format": "tar.gz",
+      "archive_root": "nvim-macos-{arch}"
+    },
+    {
+      "name": "tree-sitter",
+      "repository": "tree-sitter/tree-sitter",
+      "asset": "tree-sitter-macos-{arch}.gz",
+      "architectures": { "arm64": "arm64", "x86_64": "x64" },
+      "format": "gz"
+    }
+  ],
+  "brew": [
+    "node",
+    "vscode-langservers-extracted",
+    "tombi",
+    "typst",
+    "typstyle",
+    "d2",
+    "latexindent"
+  ],
+  "commands": [
+    {
+      "name": "Rustup stable toolchain",
+      "steps": [
+        ["rustup", "update", "stable"],
+        [
+          "rustup",
+          "component",
+          "add",
+          "rust-analyzer",
+          "rustfmt",
+          "clippy",
+          "rust-src",
+          "--toolchain",
+          "stable"
+        ]
+      ]
+    },
+    {
+      "name": "Cargo-installed servers",
+      "steps": [
+        ["cargo", "+stable", "install", "--locked", "asm-lsp"],
+        ["cargo", "+stable", "install", "--locked", "pest-language-server"]
+      ]
+    },
+    {
+      "name": "GHCup-managed Haskell tools",
+      "steps": [
+        ["ghcup", "upgrade"],
+        ["ghcup", "install", "ghc", "latest", "--set"],
+        ["ghcup", "install", "cabal", "latest", "--set"],
+        ["ghcup", "install", "stack", "latest", "--set"],
+        ["ghcup", "install", "hls", "latest", "--set"]
+      ]
+    },
+    {
+      "name": "Manual Stack-installed Haskell tools",
+      "steps": [
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "hoogle"
+        ],
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "fast-tags"
+        ],
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "fourmolu"
+        ],
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "hlint"
+        ],
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "haskell-debug-adapter"
+        ],
+        [
+          "stack",
+          "--resolver",
+          "{stack_resolver}",
+          "install",
+          "--local-bin-path",
+          "{bin}",
+          "ghci-dap"
+        ]
+      ]
+    },
+    {
+      "name": "Elan (project Lean versions remain selected by lean-toolchain)",
+      "steps": [
+        ["elan", "self", "update"],
+        ["elan", "toolchain", "install", "leanprover/lean4:stable"]
+      ]
+    }
+  ],
+  "stack_resolver": "lts",
+  "mason": {
+    "aliases": { "typos_lsp": "typos-lsp" },
+    "exclude": [],
+    "extra": ["tinymist", "docker-compose-language-service", "json-lsp"]
+  },
+  "texlive": {
+    "bin": "/Library/TeX/texbin",
+    "repository": "https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final",
+    "year": "2024",
+    "packages": ["latexmk"]
+  },
+  "managed": {
+    "Nix-Darwin": [
+      "rg",
+      "fd",
+      "fzf",
+      "bat",
+      "delta",
+      "diff-so-fancy",
+      "tmux",
+      "git",
+      "just",
+      "uv",
+      "typos"
+    ],
+    "macOS": ["open", "xmllint", "cc", "make"]
+  },
+  "nix": {
+    "directory": "{home}/.config/nix",
+    "steps": [
+      ["nix", "flake", "update", "--flake", "{nix_directory}"],
+      ["sudo", "darwin-rebuild", "switch", "--flake", "{nix_directory}"]
+    ]
+  }
+}

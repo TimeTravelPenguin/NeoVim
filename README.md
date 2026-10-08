@@ -15,3 +15,12 @@ rollback instructions are recorded in [docs/refactor-log.md](docs/refactor-log.m
 
 The target editor version is recorded in `.nvim-version`. Neovim 0.11.7 remains
 supported as a rollback path with its own lockfile and plugin directory.
+
+Use `:Hex 64` or `:Hex 0x64` to jump to line 100. Hex digits and the optional
+`0x` prefix are case-insensitive. The line number must be between 1 and the
+current buffer's line count; invalid input shows an error without moving the cursor.
+
+Run `just plan` to review the external-tool installation methods, `just update-nvim`
+to download and install Neovim, or `just update` to update Neovim and its tools.
+Update recipes ask for confirmation. See [maintenance](docs/maintenance.md) for
+the tool inventory, separate Nix update, and how to extend the installer.
