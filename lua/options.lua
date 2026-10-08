@@ -10,3 +10,4 @@ opt.relativenumber = true
 
 require "commands.textwidth"
 require "commands.saving"
+require "commands.hex"
