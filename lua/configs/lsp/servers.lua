@@ -1,5 +1,6 @@
 return function(on_attach, capabilities)
   return {
+    asm_lsp = {},
     html = {},
     cssls = {},
     docker_compose_language_service = {},
